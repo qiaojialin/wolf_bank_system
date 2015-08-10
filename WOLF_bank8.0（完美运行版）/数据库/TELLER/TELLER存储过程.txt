@@ -1,0 +1,90 @@
+CREATE OR REPLACE procedure TELLER.sp_changepassword(
+    v_user_id   in   user_info.user_id%type,
+    v_password   in   user_info.user_password%type
+)
+is
+begin    
+    update user_info set user_password=v_password
+    where v_user_id=user_info.user_id;
+end;
+/
+
+
+
+CREATE OR REPLACE PROCEDURE TELLER.sp_check_user_password (
+   V_USERID   IN     user_info.user_id%TYPE,
+   V_PASSWORD       OUT user_info.user_password%type)
+IS
+BEGIN
+    select user_password
+    into V_PASSWORD
+    from user_Info
+    where user_id=V_USERID;
+END;
+/
+
+
+
+CREATE OR REPLACE procedure TELLER.sp_loginhistory(
+    v_user_id in user_login_history.USER_ID%type,
+    v_login_ip in user_login_history.login_ip%type,
+    v_login_time in user_login_history.login_time%type)
+is
+begin
+    insert into user_login_history(user_id,login_ip,login_time,user_state)
+    values(v_user_id,v_login_ip,v_login_time,'ÒÑµÇÂ¼');
+end;
+/
+
+
+
+CREATE OR REPLACE PROCEDURE TELLER.SP_MENUCHECK (
+   V_USERID   IN     user_info.user_id%TYPE,
+   P_CURSOR       OUT CURSOR_PACKAGE.P_CURSOR)
+IS
+BEGIN
+   OPEN P_CURSOR FOR 
+   SELECT power.power_name,power.power_page_path 
+   from user_info,role,power,user_role_ref,role_power_ref
+where user_info.user_id=user_role_ref.user_id and user_role_ref.role_id=role.role_id
+     and role.role_id=role_power_ref.role_id and role_power_ref.power_id=power.power_id
+     and user_info.user_id=V_USERID;
+END;
+/
+
+
+
+
+CREATE OR REPLACE procedure TELLER.sp_register(
+    v_user_id   in   user_info.user_id%type,
+    v_user_name   in   user_info.user_name%type,
+    v_sex   in   user_info.sex%type,
+    v_user_age   in   user_info.user_age%type,
+    v_user_phone   in   user_info.user_phone%type,
+    v_password   in   user_info.user_password%type,
+    v_role_id   in   user_role_ref.role_id%type,
+    v_user_identity in user_info.user_identity%type)
+is
+begin    
+    insert into user_info(user_id,user_name,sex,user_age,user_phone,user_password,user_identity) 
+                values(v_user_id,v_user_name,v_sex,v_user_age,v_user_phone,v_password,v_user_identity);
+    insert into user_role_ref(role_id,user_id)
+                values(v_role_id,v_user_id);
+end;
+/
+
+
+
+
+CREATE OR REPLACE procedure TELLER.sp_usercheck(
+    v_user_id in user_info.USER_ID%type,
+    v_user_pwd in user_info.USER_PASSWORD%type,
+    flag out number)
+is
+begin
+    select count(1)
+    into flag
+    from user_info u
+    where u.USER_ID = v_user_id and u.USER_PASSWORD = v_user_pwd;
+end;
+/

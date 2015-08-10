@@ -1,0 +1,8 @@
+CREATE OR REPLACE TRIGGER TELLER."trigger1"
+before insert ON TELLER.USER_LOGIN_HISTORY
+referencing old as old new as new for each row
+declare
+begin
+select TELLER.LOGIN_HISTORY_SEQ.nextval into:new.login_number from dual;
+end "trigger1";
+/

@@ -1,0 +1,50 @@
+
+
+CREATE OR REPLACE TRIGGER ENSEMBLE."trigger1"
+before insert ON ENSEMBLE.CL_LOAN
+referencing old as old new as new for each row
+declare
+begin
+select ENSEMBLE.CL_LOAN_SEQ.nextval into:new.LOAN_KEY from dual;
+end "trigger1";
+/
+
+
+
+
+
+CREATE OR REPLACE TRIGGER ENSEMBLE."trigger2"
+before insert ON ENSEMBLE.CL_RECEIPT_TBL
+referencing old as old new as new for each row
+declare
+begin
+select ENSEMBLE.LOAN_RECEIPT_SEQ.nextval into:new.RECEIPT_KEY from dual;
+end "trigger2";
+/
+
+
+
+
+
+
+
+CREATE OR REPLACE TRIGGER ENSEMBLE."trigger3"
+before insert ON ENSEMBLE.CL_RECEIPT_TBL
+referencing old as old new as new for each row
+declare
+begin
+select ENSEMBLE.LOAN_RECEIPT_SEQ.nextval into:new.RECEIPT_KEY from dual;
+end "trigger3";
+/
+
+
+
+
+CREATE OR REPLACE TRIGGER ENSEMBLE."trigger4"
+before insert ON ENSEMBLE.CL_INVOICE_TBL
+referencing old as old new as new for each row
+declare
+begin
+select ENSEMBLE.LOAN_INVOICE_SEQ.nextval into:new.INERNAL_KEY from dual;
+end "trigger4";
+/

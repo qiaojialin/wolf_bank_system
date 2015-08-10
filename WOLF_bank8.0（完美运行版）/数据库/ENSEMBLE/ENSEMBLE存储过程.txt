@@ -1,0 +1,247 @@
+CREATE OR REPLACE procedure ENSEMBLE.sp_accruals(
+    v_loan_no    in    CL_ACCRUALS.LOAN_NO%type,
+    v_dd_no    in    CL_ACCRUALS.DD_KEY%type
+)
+is
+begin
+insert into ENSEMBLE.CL_ACCRUALS(LOAN_NO,DD_KEY,DD_AMT,INT_RATE,INTEREST_AMT,LAST_CHANGE_DATE)
+values
+(
+v_loan_no,
+v_dd_no,
+(select OUTSTANDING from ENSEMBLE.CL_DRAWDOWN_TBL where LOAN_KEY=v_loan_no and DD_KEY=v_dd_no),
+(select ACTUAL_RATE from ENSEMBLE.FM_INT_RATE where INT_TYPE=1),
+30*(select OUTSTANDING from ENSEMBLE.CL_DRAWDOWN_TBL where LOAN_KEY=v_loan_no and DD_KEY=v_dd_no)*(select ACTUAL_RATE from ENSEMBLE.FM_INT_RATE where INT_TYPE=1),
+sysdate
+);
+
+update ENSEMBLE.CL_REPAY_SCHED_TMP
+set INT_AMT=30*(select OUTSTANDING from ENSEMBLE.CL_DRAWDOWN_TBL where LOAN_KEY=v_loan_no and DD_NO=v_dd_no)*(select ACTUAL_RATE from ENSEMBLE.FM_INT_RATE where INT_TYPE=1)
+where DD_KEY=v_dd_no and LOAN_KEY=v_loan_no;
+
+end;
+/
+
+
+
+
+
+CREATE OR REPLACE procedure ENSEMBLE.sp_acctcreate(
+    v_internal_key    in    RB_ACCT.internal_key%type,
+    v_ledger_bal    in    RB_ACCT.ledger_bal%type,
+    v_client_no    in    FM_CLIENT.client_no%type
+)
+is
+begin
+    
+    insert into RB_ACCT(INTERNAL_KEY,LEDGER_BAL,CLIENT_NO,ACCT_OPEN_DATE)
+    values(v_internal_key,v_ledger_bal,v_client_no,sysdate);
+end;
+/
+
+
+
+
+
+CREATE OR REPLACE PROCEDURE ENSEMBLE.SP_CHECKACCOUNT (
+    V_INTERNAL_KEY    IN    rb_acct.INTERNAL_KEY%TYPE,
+    V_ACCT_OPEN_DATE    OUT    rb_acct.ACCT_OPEN_DATE%TYPE,
+    V_ACCT_STATUS    OUT    rb_acct.ACCT_STATUS%TYPE,
+    V_DEPOSIT_TYPE    OUT    rb_acct.DEPOSIT_TYPE%TYPE,
+    V_LEDGER_BAL    OUT    rb_acct.LEDGER_BAL%TYPE,
+    V_ACUAL_BAL    OUT    rb_acct.ACUAL_BAL%TYPE
+)
+
+IS
+BEGIN
+    SELECT ACCT_OPEN_DATE,ACCT_STATUS,DEPOSIT_TYPE,LEDGER_BAL,ACUAL_BAL
+    into V_ACCT_OPEN_DATE,V_ACCT_STATUS,V_DEPOSIT_TYPE,V_LEDGER_BAL,V_ACUAL_BAL
+    FROM rb_acct
+    WHERE INTERNAL_KEY=V_INTERNAL_KEY;
+END SP_CHECKACCOUNT;
+/
+
+
+
+
+
+CREATE OR REPLACE procedure ENSEMBLE.sp_clientregister(
+    v_clientid   in   FM_CLIENT.CLIENT_NO%type,
+    v_clientname   in   FM_CLIENT.CH_CLIENT_NAME%type,
+    v_city   in   FM_CLIENT.CLIENT_CITY%type,
+    v_address   in   FM_CLIENT.LOCATION%type,
+    v_country   in   FM_CLIENT.COUNTRY_LOC%type,
+    v_job   in   FM_CLIENT.INDUSRTY%type)
+is
+begin    
+    insert into FM_CLIENT(CLIENT_NO,CH_CLIENT_NAME,CLIENT_CITY,LOCATION,COUNTRY_LOC,INDUSRTY) 
+                values(v_clientid,v_clientname,v_city,v_address,v_country,v_job);
+   
+end;
+/
+
+
+
+
+
+CREATE OR REPLACE procedure ENSEMBLE.sp_drawdown(
+    
+    v_loan_key in CL_DRAWDOWN_TBL.LOAN_KEY%type,
+    v_dd_key in CL_DRAWDOWN_TBL.DD_KEY%type,
+    v_client_name in CL_DRAWDOWN_TBL.LENDER%type,
+    v_amt in CL_DRAWDOWN_TBL.DD_AMT%type,
+    v_base_acctno in CL_SETTLR_DEFAULT_TBL.BASE_ACCT_NO%type
+)
+is
+begin
+    insert into CL_DRAWDOWN_TBL(LOAN_KEY,DD_KEY,LENDER,DD_AMT,TRAN_DATE,MATURITY,OUTSTANDING,ADVICE_SENT)
+    values(v_loan_key,v_dd_key,v_client_name,v_amt,sysdate,sysdate+30,v_amt,'N');
+    
+    insert into CL_SETTLR_DEFAULT_TBL(LOAN_KEY,DD_KEY,BASE_ACCT_NO)
+    values(v_loan_key,v_dd_key,v_base_acctno);
+    
+    insert into CL_REPAY_SCHED_TMP(LOAN_KEY,DD_KEY,START_DATE,END_DATE,REPAY_AMT)
+    values(v_loan_key,v_dd_key,sysdate,sysdate+30,v_amt);
+    
+end;
+/
+
+
+
+
+
+CREATE OR REPLACE procedure ENSEMBLE.sp_invoice(
+    v_invoiceid   in   CL_DRAWDOWN_TBL.DD_KEY%type,
+    v_invoicekey   in  CL_DRAWDOWN_TBL.LOAN_KEY%type,
+    v_pri_outstanding   out   CL_DRAWDOWN_TBL.PRI_OUTSTANDING%type,
+    v_int_outstanding   out   CL_DRAWDOWN_TBL.INT_OUTSTANDING%type,
+    v_dop_outstanding   out   CL_DRAWDOWN_TBL.DOP_OUTSTANDING%type,
+    v_lender   out   CL_DRAWDOWN_TBL.LENDER%type,
+    v_dd_date   out   CL_DRAWDOWN_TBL.DD_DATE%type,
+    v_maturity   out   CL_DRAWDOWN_TBL.MATURITY%type)
+is
+begin  
+  
+select   PRI_OUTSTANDING,INT_OUTSTANDING,DOP_OUTSTANDING,LENDER,DD_DATE,MATURITY
+into v_pri_outstanding,v_int_outstanding,v_dop_outstanding,v_lender,v_dd_date,v_maturity
+from  CL_DRAWDOWN_TBL
+WHERE DD_NO=v_invoiceid and LOAN_KEY=v_invoicekey;
+
+insert into CL_INVOICE_TBL(LOAN_KEY,DD_KEY,CLIENT_NAME,BILLED_AMT,OUTSTANDING,REPAY_AMT,INT_FROM,INT_TO)
+values (v_invoicekey,v_invoiceid,v_lender,v_int_outstanding,v_pri_outstanding,v_dop_outstanding,v_dd_date,v_maturity);
+
+END sp_invoice;
+/
+
+
+
+
+
+CREATE OR REPLACE procedure ENSEMBLE.sp_loancreate(
+    
+    v_contract_no    in    CL_LOAN.CONTRACT_NO%type,
+    v_lender    in    CL_LOAN.LENDER%type,
+    v_borrower    in    CL_LOAN.BORROWER%type,
+    v_borrower_type    in    CL_LOAN.BORROWER_TYPE%type,
+    v_loan_type     in    CL_LOAN.LOAN_TYPE%type,
+    v_loan_sub_type    in    CL_LOAN.LOAN_SUB_TYPE%type,
+    v_amt in CL_LOAN.loan_amt%type,
+    v_loan_no    out    CL_LOAN.LOAN_KEY%type
+)
+is
+begin
+    insert into CL_LOAN(CONTRACT_NO,LENDER,BORROWER,BORROWER_TYPE,LOAN_TYPE,LOAN_SUB_TYPE,LOAN_AMT)
+    values(v_contract_no,v_lender,v_borrower,v_borrower_type,v_loan_type,v_loan_sub_type,v_amt);
+    
+    select LOAN_KEY
+    into v_loan_no
+    from CL_LOAN
+    where CONTRACT_NO=v_contract_no;
+end;
+/
+
+
+
+
+
+CREATE OR REPLACE PROCEDURE ENSEMBLE.SP_LOANRECEIPT(
+    V_LOANKEY    IN    CL_RECEIPT_TBL.LOAN_KEY%TYPE,
+    V_DDNO    IN    CL_RECEIPT_TBL.NARRATIVE%TYPE,
+    V_PRI_OUTSTANDING  IN    CL_RECEIPT_TBL.RECEIPT_AMT%TYPE,
+    V_INT_OUTSTANDING  IN    CL_RECEIPT_TBL.RECEIPT_AMT%TYPE,
+    V_PRINAME       IN  CL_RECEIPT_TBL.RECEIPT%TYPE,
+    V_INTNAME       IN  CL_RECEIPT_TBL.RECEIPT%TYPE
+    
+)
+IS
+BEGIN
+
+    insert into CL_RECEIPT_TBL(NARRATIVE,LOAN_KEY,RECEIPT_AMT,TRAN_DATE)
+    values(V_DDNO,V_LOANKEY,V_PRI_OUTSTANDING+V_INT_OUTSTANDING,sysdate);
+
+    insert  into CL_PAID_INVOICE(LOAN_KEY,DD_NO,RECEIPT_NO,PAID_AMT,INVOICE_TYPE)
+   values(V_LOANKEY,V_DDNO,(select RECEIPT_KEY from CL_RECEIPT_TBL where LOAN_KEY=V_LOANKEY and NARRATIVE=V_DDNO),V_PRI_OUTSTANDING,V_PRINAME);
+   
+   insert  into CL_PAID_INVOICE(LOAN_KEY,DD_NO,RECEIPT_NO,PAID_AMT,INVOICE_TYPE)
+   values(V_LOANKEY,V_DDNO,(select RECEIPT_KEY from CL_RECEIPT_TBL where LOAN_KEY=V_LOANKEY and NARRATIVE=V_DDNO),V_INT_OUTSTANDING,V_INTNAME );
+   
+   update CL_REPAY_SCHED_TMP 
+        set REPAY_AMT=REPAY_AMT-V_PRI_OUTSTANDING,
+            INT_AMT=INT_AMT-V_INT_OUTSTANDING
+            where LOAN_KEY=V_LOANKEY and DD_KEY=V_DDNO;
+   
+END ;
+/
+
+
+
+
+
+CREATE OR REPLACE procedure ENSEMBLE.sp_receiptsettle(
+    v_baseacctno   in   CL_SETTLE_REC.BASE_ACCT_NO%type,
+    v_clientno     in   FM_CLIENT.CLIENT_NO%type,
+    v_acct         in   CL_SETTLE_REC.ACCT%type,   
+    v_recamt       in   CL_SETTLE_REC.REC_AMT%type)
+is
+begin    
+    insert into CL_SETTLE_REC(CLIENT_NO,CLIENT_NAME,ACCT,BASE_ACCT_NO,REC_AMT,TRAN_DATE) 
+                values(v_clientno,(select CH_CLIENT_NAME from FM_CLIENT where CLIENT_NO=v_clientno),v_acct,v_baseacctno,v_recamt,sysdate);
+   
+    update ENSEMBLE.RB_ACCT
+    set LEDGER_BAL=LEDGER_BAL+v_recamt
+    where INTERNAL_KEY=v_acct;
+    
+    update ENSEMBLE.RB_ACCT
+    set LEDGER_BAL=LEDGER_BAL-v_recamt
+    where INTERNAL_KEY=v_baseacctno;
+    
+end;
+/
+
+
+
+
+
+CREATE OR REPLACE procedure ENSEMBLE.sp_settlepay(
+    v_client   in   FM_CLIENT.CLIENT_NO%type,
+    v_acct   in   CL_SETTLE_PAY.ACCT%type,
+    v_payamt   in   CL_SETTLE_PAY.PAY_AMT%type,
+    v_baseacctno   in   CL_SETTLE_PAY.BASE_ACCT_NO%type
+)
+is
+begin
+ 
+    insert into CL_SETTLE_PAY(CLIENT,ACCT,PAY_AMT,BASE_ACCT_NO,TRAN_DATE) 
+                values(v_client,v_acct,v_payamt,v_baseacctno,sysdate);
+    update CL_SETTLE_PAY set CLIENT_NAME = (select CH_CLIENT_NAME
+                                     from FM_CLIENT
+                                     where CLIENT_NO=v_client)
+    where CL_SETTLE_PAY.CLIENT=v_client;
+    
+    update RB_ACCT set RB_ACCT.LEDGER_BAL = RB_ACCT.LEDGER_BAL - v_payamt
+    where RB_ACCT.INTERNAL_KEY=v_acct;
+    update RB_ACCT set RB_ACCT.LEDGER_BAL = RB_ACCT.LEDGER_BAL + v_payamt
+    where RB_ACCT.INTERNAL_KEY=v_baseacctno;
+    
+end;
+/

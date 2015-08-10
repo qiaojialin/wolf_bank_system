@@ -1,0 +1,298 @@
+CREATE TABLE ESB.REFERENCE_TAB
+(
+  REFERENCE_ID      VARCHAR2(16 BYTE)           NOT NULL,
+  REFERENCE_NAME    VARCHAR2(50 BYTE),
+  REFERENCE_TYPE    VARCHAR2(50 BYTE),
+  REFERENCE_VALUES  VARCHAR2(200 BYTE)
+)
+TABLESPACE ESB
+PCTUSED    40
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+NOPARALLEL
+MONITORING;
+
+
+CREATE TABLE ESB.SERVER_REFERENCE
+(
+  MAPPING_ID         VARCHAR2(16 BYTE)          NOT NULL,
+  TELLER_TRAN_NO     VARCHAR2(50 BYTE),
+  SYMBOLS_TRAN_NO    VARCHAR2(50 BYTE),
+  MAPPING_NO         VARCHAR2(50 BYTE),
+  SUB_SERVICE_CLASS  VARCHAR2(200 BYTE)
+)
+TABLESPACE ESB
+PCTUSED    40
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+NOPARALLEL
+MONITORING;
+
+
+CREATE TABLE ESB.FRONT_TRAN_HIST
+(
+  TRAN_SEQ          VARCHAR2(40 BYTE)           NOT NULL,
+  FRONT_SEQ         VARCHAR2(40 BYTE),
+  ACCT_ID           VARCHAR2(20 BYTE),
+  SUB_ACCT_ID       VARCHAR2(20 BYTE),
+  BANK_ID           VARCHAR2(8 BYTE),
+  OPER_ID           VARCHAR2(20 BYTE),
+  TRAN_CODE         VARCHAR2(10 BYTE),
+  TRAN_NAME         VARCHAR2(30 BYTE),
+  AMOUNT            NUMBER,
+  CCY               VARCHAR2(4 BYTE),
+  TRAN_DATE         VARCHAR2(20 BYTE),
+  TRAN_STATUS       VARCHAR2(1 BYTE),
+  RE_CODE           VARCHAR2(4 BYTE),
+  REVERSAL_RS_CODE  VARCHAR2(4 BYTE),
+  REVERSAL_DATE     VARCHAR2(20 BYTE),
+  PROFIT_CENTER     VARCHAR2(12 BYTE),
+  SOURCE_MODULE     VARCHAR2(2 BYTE),
+  REFERENCE         VARCHAR2(20 BYTE)
+)
+TABLESPACE ESB
+PCTUSED    40
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+NOPARALLEL
+MONITORING;
+
+
+CREATE TABLE ESB.FRONT_TRAN_DETL
+(
+  TRAN_SEQ          VARCHAR2(40 BYTE)           NOT NULL,
+  FRONT_SEQ         VARCHAR2(40 BYTE),
+  ACCT_ID           VARCHAR2(20 BYTE),
+  SUB_ACCT_ID       VARCHAR2(20 BYTE),
+  BANK_ID           VARCHAR2(8 BYTE),
+  OPER_ID           VARCHAR2(20 BYTE),
+  TRAN_CODE         VARCHAR2(18 BYTE),
+  TRAN_NAME         VARCHAR2(30 BYTE),
+  AMOUNT            NUMBER,
+  CCY               VARCHAR2(20 BYTE),
+  TRAN_DATE         VARCHAR2(20 BYTE),
+  TRAN_STATUS       VARCHAR2(1 BYTE),
+  RE_CODE           VARCHAR2(4 BYTE),
+  REVERSAL_RS_CODE  VARCHAR2(4 BYTE),
+  REVERSAL_DATE     VARCHAR2(20 BYTE),
+  PROFIT_CENTER     VARCHAR2(12 BYTE),
+  SOURCE_MODULE     VARCHAR2(2 BYTE),
+  REFERENCE         VARCHAR2(20 BYTE)
+)
+TABLESPACE ESB
+PCTUSED    40
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+NOPARALLEL
+MONITORING;
+
+
+CREATE UNIQUE INDEX ESB.PK_FRONT_TRAN_DETL ON ESB.FRONT_TRAN_DETL
+(TRAN_SEQ)
+LOGGING
+TABLESPACE ESB
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           )
+NOPARALLEL;
+
+
+CREATE UNIQUE INDEX ESB.PK_FRONT_TRAN_HIST ON ESB.FRONT_TRAN_HIST
+(TRAN_SEQ)
+LOGGING
+TABLESPACE ESB
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           )
+NOPARALLEL;
+
+
+CREATE UNIQUE INDEX ESB.PK_REFERENCE_TAB ON ESB.REFERENCE_TAB
+(REFERENCE_ID)
+LOGGING
+TABLESPACE ESB
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           )
+NOPARALLEL;
+
+
+CREATE UNIQUE INDEX ESB.PK_SERVER_REFERENCE ON ESB.SERVER_REFERENCE
+(MAPPING_ID)
+LOGGING
+TABLESPACE ESB
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           )
+NOPARALLEL;
+
+
+ALTER TABLE ESB.REFERENCE_TAB ADD (
+  CONSTRAINT PK_REFERENCE_TAB
+ PRIMARY KEY
+ (REFERENCE_ID)
+    USING INDEX 
+    TABLESPACE ESB
+    PCTFREE    10
+    INITRANS   2
+    MAXTRANS   255
+    STORAGE    (
+                INITIAL          64K
+                NEXT             1M
+                MINEXTENTS       1
+                MAXEXTENTS       UNLIMITED
+                PCTINCREASE      0
+                FREELISTS        1
+                FREELIST GROUPS  1
+               ));
+
+ALTER TABLE ESB.SERVER_REFERENCE ADD (
+  CONSTRAINT PK_SERVER_REFERENCE
+ PRIMARY KEY
+ (MAPPING_ID)
+    USING INDEX 
+    TABLESPACE ESB
+    PCTFREE    10
+    INITRANS   2
+    MAXTRANS   255
+    STORAGE    (
+                INITIAL          64K
+                NEXT             1M
+                MINEXTENTS       1
+                MAXEXTENTS       UNLIMITED
+                PCTINCREASE      0
+                FREELISTS        1
+                FREELIST GROUPS  1
+               ));
+
+ALTER TABLE ESB.FRONT_TRAN_HIST ADD (
+  CONSTRAINT PK_FRONT_TRAN_HIST
+ PRIMARY KEY
+ (TRAN_SEQ)
+    USING INDEX 
+    TABLESPACE ESB
+    PCTFREE    10
+    INITRANS   2
+    MAXTRANS   255
+    STORAGE    (
+                INITIAL          64K
+                MINEXTENTS       1
+                MAXEXTENTS       UNLIMITED
+                PCTINCREASE      0
+                FREELISTS        1
+                FREELIST GROUPS  1
+               ));
+
+ALTER TABLE ESB.FRONT_TRAN_DETL ADD (
+  CONSTRAINT PK_FRONT_TRAN_DETL
+ PRIMARY KEY
+ (TRAN_SEQ)
+    USING INDEX 
+    TABLESPACE ESB
+    PCTFREE    10
+    INITRANS   2
+    MAXTRANS   255
+    STORAGE    (
+                INITIAL          64K
+                NEXT             1M
+                MINEXTENTS       1
+                MAXEXTENTS       UNLIMITED
+                PCTINCREASE      0
+                FREELISTS        1
+                FREELIST GROUPS  1
+               ));
+

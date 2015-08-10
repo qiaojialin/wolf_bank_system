@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	
+	<servlet>
+		<servlet-name>login</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun0_LoginServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>login</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>register</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun4_RegisterServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>register</servlet-name>
+		<url-pattern>*.reg</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>changepassword</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun5_ChangePasswordServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>changepassword</servlet-name>
+		<url-pattern>*.change</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	<servlet>
+		<servlet-name>clientregister</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun6_ClientRegisterServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>clientregister</servlet-name>
+		<url-pattern>*.creg</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>loancreate</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun7_LoanCreateServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>loancreate</servlet-name>
+		<url-pattern>*.loancreate</url-pattern>
+	</servlet-mapping>
+	
+	
+		<servlet>
+		<servlet-name>checkaccount</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun8_CheckAccountServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>checkaccount</servlet-name>
+		<url-pattern>*.checkaccount</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>receiptsettle</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun13_ReceiptSettleServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>receiptsettle</servlet-name>
+		<url-pattern>*.receiptsettle</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>settlepay</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun10_SettlePayServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>settlepay</servlet-name>
+		<url-pattern>*.spay</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>loanreceipt</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun12_LoanReceiptServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>loanreceipt</servlet-name>
+		<url-pattern>*.loanreceipt</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>drawdown</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun9_DrawdownServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>drawdown</servlet-name>
+		<url-pattern>*.drawdown</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<servlet-name>invoice</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun11_InvoiceServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>invoice</servlet-name>
+		<url-pattern>*.invoice</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+	<servlet>
+		<servlet-name>acctcreate</servlet-name>
+		<servlet-class>
+			Teller.servlet.fun14_AcctCreateServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>acctcreate</servlet-name>
+		<url-pattern>*.acctcreate</url-pattern>
+	</servlet-mapping>	
+	
+	
+	
+	
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>

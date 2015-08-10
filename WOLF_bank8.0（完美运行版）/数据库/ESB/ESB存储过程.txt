@@ -1,0 +1,11 @@
+CREATE OR REPLACE PROCEDURE ESB.sp_check_server (
+   V_REQUEST   IN     server_reference.teller_tran_no%TYPE,
+   V_SERVER    OUT    server_reference.symbols_tran_no%type)
+IS
+BEGIN
+    select symbols_tran_no
+    into V_SERVER
+    from server_reference
+    where teller_tran_no=V_REQUEST;
+END;
+/

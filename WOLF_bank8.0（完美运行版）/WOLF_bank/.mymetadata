@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="WOLF_bank"
+  id="myeclipse.1436514164794"
+  context-root="/WOLF_bank"
+  j2ee-spec="5.0"
+  archive="WOLF_bank.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+
